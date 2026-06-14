@@ -16,8 +16,8 @@ jobs:
   feature-nodejs-pipeline:
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: list file
-        run: ls -l
+    - name: list file
+      run: ls -l
