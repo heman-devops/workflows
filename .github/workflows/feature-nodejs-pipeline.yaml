@@ -1,0 +1,23 @@
+# runs-on: self-hosted
+name: feature-nodejs-pipeline
+on:
+  workflow_call:
+    inputs:
+      project:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string 
+      environment:
+        required: true
+        type: string
+jobs:
+  feature-nodejs-pipeline:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: list file
+        run: ls -l
