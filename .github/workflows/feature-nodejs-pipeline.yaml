@@ -34,7 +34,6 @@ jobs:
         aws-region: us-east-1
 
     - name: docker build 
-      run: docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${inputs.project}/${inputs.component}:${APP_VERSION} .
-
+      run: docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
 
     # docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
