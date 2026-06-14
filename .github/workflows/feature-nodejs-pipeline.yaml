@@ -24,7 +24,11 @@ jobs:
       run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
     - name: npm install 
-      run: echo "npm test"
+      run: npm install
+
+    - name: Docker build
+      run: |
+        docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v5.1.1
@@ -33,7 +37,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: docker build 
-      run: docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
-
-    # docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+    - name: Push image
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION
