@@ -29,7 +29,6 @@ jobs:
 
     - name: Update status
       uses: heman-devops/workflows/.github/actions/set-status/action.yaml@main
-    with:
       with:
         sha: ${{ github.sha }}
         state: ${{ steps.npm_install.outcome }}
