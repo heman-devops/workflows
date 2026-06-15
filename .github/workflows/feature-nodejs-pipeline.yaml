@@ -33,10 +33,10 @@ jobs:
     
     - name: Update Docker build
       if: always()
-      uses: heman-devops/workflows/.github/workflows/update-status.yaml@main
+      uses: heman-devops/workflows/.github/workflows/update-status@main
       with:
         sha: ${{ github.sha }}
-        state: ${{ steps.docker_build.outcome }}     # success / failure / cancelled
+        state: ${{ steps.docker_build.outcome }}    
         context: DOCKER_BUILD
         description: ${{ steps.docker_build.outcome }}
 
