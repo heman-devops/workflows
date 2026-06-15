@@ -24,7 +24,16 @@ jobs:
       run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV 
     
     - name: npm install 
+      id: npm_install 
       run: npm install
+
+    - name: Update status
+      uses: heman-devops/workflows/.github/actions/set-status/action.yml@main
+      with:
+        sha: ${{ github.sha }}
+        state: ${{ steps.npm_install.outcome }}
+        context: NPM install
+        description: ${{ steps.npm_install.outcome }}
 
     - name: Docker build
       id: docker_build
