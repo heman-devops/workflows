@@ -30,15 +30,6 @@ jobs:
       id: docker_build
       run: |
         docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
-    
-    - name: Update Docker build
-      if: always()
-      uses: heman-devops/workflows/.github/workflows/update-status@main
-      with:
-        sha: ${{ github.sha }}
-        state: ${{ steps.docker_build.outcome }}    
-        context: DOCKER_BUILD
-        description: ${{ steps.docker_build.outcome }}
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v5.1.1
