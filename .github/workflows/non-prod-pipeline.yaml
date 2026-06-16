@@ -28,32 +28,42 @@ jobs:
         echo "Using commit: $APP_VERSION"
 
 
-    - name: Check Commit Status
+    - name: Show Commit Checks Status
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
       run: |
 
         COMMIT_SHA=${{ inputs.version }}
 
         echo "Checking commit: $COMMIT_SHA"
 
-
-        STATUS=$(curl -s \
-        -H "Authorization: token ${{ github.token }}" \
+        CHECKS=$(curl -s \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
         -H "Accept: application/vnd.github+json" \
-        https://api.github.com/repos/${{ github.repository }}/commits/$COMMIT_SHA/status \
-        | jq -r '.state')
+        https://api.github.com/repos/${{ github.repository }}/commits/$COMMIT_SHA/check-runs)
 
 
-        echo "Commit Status: $STATUS"
+        echo "----- Commit Checks -----"
+
+        echo "$CHECKS" | jq -r '
+          .check_runs[] |
+          "\(.name) : \(.status) : \(.conclusion)"
+        '
 
 
-        if [ "$STATUS" != "success" ]; then
-          echo "❌ Commit validation failed"
+        FAILED=$(echo "$CHECKS" | jq '
+          [.check_runs[] | select(.conclusion != "success")] | length
+        ')
+
+
+        if [ "$FAILED" -gt 0 ]; then
+          echo "❌ Commit Checks Status: FAILURE"
           exit 1
+        else
+          echo "✅ Commit Checks Status: SUCCESS"
         fi
 
 
-        echo "✅ Commit validation passed"
-
-
-            
-            
+                
+                
