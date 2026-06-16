@@ -82,3 +82,9 @@ jobs:
       run: |
         aws eks update-kubeconfig --region us-east-1 --name roboshop-dev
         kubectl get nodes
+
+    - name: Checkout workflows repository
+      uses: actions/checkout@v4
+      with:
+        repository: MamidalaHemanChandra/catalogue-deploy
+        
