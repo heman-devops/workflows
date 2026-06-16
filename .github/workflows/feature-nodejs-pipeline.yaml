@@ -29,7 +29,7 @@ jobs:
       if: always()
       with:
         state:  ${{ steps.app_version.outcome }}
-        context: ECR Push
+        context: APP VERSION
         description:  ${{ steps.app_version.outcome }}
     
     - name: npm install 
@@ -41,7 +41,7 @@ jobs:
       if: always()
       with:
         state:  ${{ steps.npm_install.outcome }}
-        context: ECR Push
+        context: NPM Install
         description:  ${{ steps.npm_install.outcome }}
 
     - name: Docker build
