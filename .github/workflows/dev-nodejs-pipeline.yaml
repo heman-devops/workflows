@@ -1,0 +1,84 @@
+name: feature-nodejs-pipeline
+on:
+  workflow_call:
+    inputs:
+      project:
+        required: true
+        type: string
+      component:
+        required: true
+        type: string 
+      environment:
+        required: true
+        type: string
+env:
+  ACC_ID: "634758830486"
+jobs:
+  feature-nodejs-pipeline:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set App version
+      id: app_version
+      run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV 
+
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.app_version.outcome }}
+        context: APP VERSION
+        description:  ${{ steps.app_version.outcome }}
+    
+    - name: npm install 
+      id: npm_install 
+      run: npm install
+
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.npm_install.outcome }}
+        context: NPM Install
+        description:  ${{ steps.npm_install.outcome }}
+
+    - name: Docker build
+      id: docker_build
+      run: |
+        docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
+
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.docker_build.outcome }}
+        context: DockerBuild
+        description:  ${{ steps.docker_build.outcome }}
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v5.1.1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Push image
+      id: push_image
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+        docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION
+
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.push_image.outcome }}
+        context: ECR Push
+        description:  ${{ steps.push_image.outcome }}
+
+    - name: Authenticate EKS Cluster
+      run: |
+        aws eks update-kubeconfig --region us-east-1 --name roboshop-dev
+        kubectl get nodes
