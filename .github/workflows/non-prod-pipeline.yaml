@@ -1,0 +1,24 @@
+name: non-prod-pipeline
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+env:
+  ACC_ID: "634758830486"
+jobs:
+  non-prod-pipeline-pipeline:
+    runs-on: self-hosted
+    steps:
+    - name: Commit ID
+      run: |
+        APP_VERSION=$(echo "${{ inputs.version }}" | cut -c1-7)
+        echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+        echo "Using commit: $APP_VERSION"
+    
+        
+        
