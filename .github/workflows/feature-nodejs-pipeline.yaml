@@ -21,19 +21,26 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set App version
+      id: app_version
       run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV 
+
+    - uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.app_version.outcome }}
+        context: ECR Push
+        description:  ${{ steps.app_version.outcome }}
     
     - name: npm install 
       id: npm_install 
       run: npm install
 
-    # - name: Update status
-    #   uses: heman-devops/workflows/.github/actions/set-status@main
-    #   with:
-    #     sha: ${{ github.sha }}
-    #     state: ${{ steps.npm_install.outcome }}
-    #     context: NPM install
-    #     description: ${{ steps.npm_install.outcome }}
+    - uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.npm_install.outcome }}
+        context: ECR Push
+        description:  ${{ steps.npm_install.outcome }}
 
     - name: Docker build
       id: docker_build
@@ -55,6 +62,14 @@ jobs:
         aws-region: us-east-1
 
     - name: Push image
+      id: push_image
       run: |
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
         docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION
+
+    - uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.push_image.outcome }}
+        context: ECR Push
+        description:  ${{ steps.push_image.outcome }}
