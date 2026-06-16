@@ -88,6 +88,14 @@ jobs:
       with:
         repository: MamidalaHemanChandra/catalogue-deploy
     
-    - name: Deploy to EKS cluster
+    - name: Deploy catalogue
       run: |
-        helm upgrade --install ${{ inputs.component }} -f values-${{ inputs.environment }}.yaml -n ${{ inputs.project }} --set deployment.version=${ APP_VERSION  } --atomic --wait --timeout 10m .
+        echo "APP_VERSION=$APP_VERSION"
+
+        helm upgrade --install ${{ inputs.component }} \
+          -f values-${{ inputs.environment }}.yaml \
+          -n ${{ inputs.project }} \
+          --set deployment.version=$APP_VERSION \
+          --atomic \
+          --wait \
+          --timeout 10m .
