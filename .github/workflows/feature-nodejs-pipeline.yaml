@@ -24,7 +24,8 @@ jobs:
       id: app_version
       run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV 
 
-    - uses: heman-devops/workflows/.github/actions/set-status@main
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
       if: always()
       with:
         state:  ${{ steps.app_version.outcome }}
@@ -35,7 +36,8 @@ jobs:
       id: npm_install 
       run: npm install
 
-    - uses: heman-devops/workflows/.github/actions/set-status@main
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
       if: always()
       with:
         state:  ${{ steps.npm_install.outcome }}
@@ -47,7 +49,8 @@ jobs:
       run: |
         docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
 
-    - uses: heman-devops/workflows/.github/actions/set-status@main
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
       if: always()
       with:
         state:  ${{ steps.docker_build.outcome }}
@@ -67,7 +70,8 @@ jobs:
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
         docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION
 
-    - uses: heman-devops/workflows/.github/actions/set-status@main
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
       if: always()
       with:
         state:  ${{ steps.push_image.outcome }}
