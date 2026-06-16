@@ -27,18 +27,24 @@ jobs:
       id: npm_install 
       run: npm install
 
-    - name: Update status
-      uses: heman-devops/workflows/.github/actions/set-status@main
-      with:
-        sha: ${{ github.sha }}
-        state: ${{ steps.npm_install.outcome }}
-        context: NPM install
-        description: ${{ steps.npm_install.outcome }}
+    # - name: Update status
+    #   uses: heman-devops/workflows/.github/actions/set-status@main
+    #   with:
+    #     sha: ${{ github.sha }}
+    #     state: ${{ steps.npm_install.outcome }}
+    #     context: NPM install
+    #     description: ${{ steps.npm_install.outcome }}
 
     - name: Docker build
       id: docker_build
       run: |
         docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
+
+    - uses: heman-devops/workflows/.github/actions/set-status@main
+      with:
+        state:  ${{ steps.docker_build.outcome }}
+        context: DockerBuild
+        description:  ${{ steps.docker_build.outcome }}
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v5.1.1
