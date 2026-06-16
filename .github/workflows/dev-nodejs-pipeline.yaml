@@ -87,4 +87,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: MamidalaHemanChandra/catalogue-deploy
-        
+    
+    - name: Deploy to EKS cluster
+      run: |
+        helm upgrade --install ${{ inputs.component }} -f values-${{ inputs.environment }}.yaml -n ${{ inputs.project }} --set imageVersion=${{ APP_VERSION }} --atomic --wait --timeout 10m .
