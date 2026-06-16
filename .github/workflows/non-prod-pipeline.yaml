@@ -26,7 +26,7 @@ jobs:
 
       run: |
 
-        COMMIT_SHA=${{ inputs.version }}
+        COMMIT_SHA=${{ github.sha }}
 
         echo "Checking commit: $COMMIT_SHA"
 
@@ -68,18 +68,16 @@ jobs:
                   .name=="EKS Deploy"
                 )
                 and
-                (.conclusion != "success")
+                (.conclusion!="success")
               )
           ] | length
         ')
 
 
         if [ "$FAILED" -gt 0 ]; then
+          echo ""
           echo "❌ Required Commit Checks Failed"
           exit 1
         fi
-
-
-        echo "✅ All Required Commit Checks Passed"
                     
                     
