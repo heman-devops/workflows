@@ -41,6 +41,7 @@ jobs:
         docker build -t $ACC_ID.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.project }}/${{ inputs.component }}:$APP_VERSION .
 
     - uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
       with:
         state:  ${{ steps.docker_build.outcome }}
         context: DockerBuild
