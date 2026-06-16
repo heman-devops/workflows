@@ -106,5 +106,5 @@ jobs:
       if: always()
       with:
         state:  ${{ steps.eks_deploy.outcome }}
-        context: ECR Push
+        context: EKS Deploy
         description:  ${{ steps.eks_deploy.outcome }}
