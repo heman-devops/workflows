@@ -37,7 +37,7 @@ jobs:
         https://api.github.com/repos/${{ github.repository }}/commits/$COMMIT_SHA/check-runs)
 
 
-        echo "----- Required Checks -----"
+        echo "----- Required Checks Status -----"
 
 
         echo "$CHECKS" | jq -r '
@@ -49,7 +49,10 @@ jobs:
               .name=="ECR Push" or
               .name=="EKS Deploy"
             )
-          | "\(.name) : status=\(.status) : conclusion=\(.conclusion)"
+          | if .conclusion=="success"
+            then "✅ \(.name) : PASSED"
+            else "❌ \(.name) : FAILED (status=\(.status), conclusion=\(.conclusion))"
+            end
         '
 
 
@@ -65,7 +68,7 @@ jobs:
                   .name=="EKS Deploy"
                 )
                 and
-                (.status != "completed" or .conclusion != "success")
+                (.conclusion != "success")
               )
           ] | length
         ')
@@ -77,7 +80,6 @@ jobs:
         fi
 
 
-        echo "✅ Required Commit Checks Passed"
-
+        echo "✅ All Required Commit Checks Passed"
                     
                     
