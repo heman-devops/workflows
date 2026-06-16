@@ -88,7 +88,8 @@ jobs:
       with:
         repository: MamidalaHemanChandra/catalogue-deploy
     
-    - name: Deploy catalogue
+    - name: Deploy to EKS
+      id: eks_deploy
       run: |
         echo "APP_VERSION=$APP_VERSION"
 
@@ -99,3 +100,11 @@ jobs:
           --atomic \
           --wait \
           --timeout 10m .
+
+    - name: Update commit status check
+      uses: heman-devops/workflows/.github/actions/set-status@main
+      if: always()
+      with:
+        state:  ${{ steps.eks_deploy.outcome }}
+        context: ECR Push
+        description:  ${{ steps.eks_deploy.outcome }}
