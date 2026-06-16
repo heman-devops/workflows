@@ -90,4 +90,4 @@ jobs:
     
     - name: Deploy to EKS cluster
       run: |
-        helm upgrade --install ${{ inputs.component }} -f values-${{ inputs.environment }}.yaml -n ${{ inputs.project }} --set imageVersion=${{ APP_VERSION }} --atomic --wait --timeout 10m .
+        helm upgrade --install ${{ inputs.component }} -f values-${{ inputs.environment }}.yaml -n ${{ inputs.project }} --set deployment.version=${ APP_VERSION  } --atomic --wait --timeout 10m .
